@@ -1,0 +1,302 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configmap
+  namespace: nginx
+data:
+  another.html: |
+    <!DOCTYPE html>
+    <html lang="en" >
+    <head>
+      <meta charset="UTF-8">
+      <title>CodePen - Old Film Effect - Pure CSS Animation</title>
+      <link rel="stylesheet" href="./style.css">
+
+    </head>
+    <body>
+    <!-- partial:index.partial.html -->
+    <input type="checkbox" id="invert"><label for="invert"></label>
+    <input type="checkbox" id="sepia"><label for="sepia"></label>
+    <div class="content">
+            <div class='film'>
+                    <div class="effect">
+                            <div class="grain"></div>
+                    </div>
+            </div>
+    </div>
+    <!-- partial -->
+
+    </body>
+    </html>
+  default.conf: "server {\r\n  listen 80;\r\n\r\n  access_log /var/log/nginx/access.log;\r\n
+    \ error_log /var/log/nginx/error.log;\r\n\r\n  root /var/www/html;\r\n\r\n  location
+    / {\r\n  }\r\n\r\n  location /another {\r\n    index another.html;\r\n  }\r\n\r\n
+    \ location /music {\r\n   index notify.mp3;\r\n   root /var/www;\r\n  }\r\n\r\n
+    \ location /third {\r\n    return 301 http://youtube.com;\r\n  }\r\n}\r\n"
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>My nginx page</title>
+          <style>
+            body {
+              width: 35em;
+              margin: 0 auto;
+              font-family: Tahoma, Verdana, Arial, sans-serif;
+            }
+          </style>
+      </head>
+      <body>
+        <h1>Welcome to nginx!</h1>
+        <p>If you want to download music, click <a href="/music/">music</a></p>
+        <p>If you want to get another page, click <a href="/another/">another page</a></p>
+        <p>If you want to receive a third party service, click <a href="/third">third party service</a></p>
+      </body>
+    </html>
+  style.css: |
+    :root {
+            --trsn: all 0.5s ease 0s;
+            --black: #000;
+    }
+
+    *, *:before, *:after {
+            position: absolute;
+    }
+
+    body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--black);
+            perspective: 100vmin;
+    }
+
+    .content {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url(https://source.unsplash.com/random/800x600/?mountain) no-repeat center center;
+            background-size: cover;
+            transition: var(--trsn);
+    }
+
+    .content:before {
+            content: "BG IMAGES FROM UNSPLASH.COM";
+            font-family: Arial, Helvetica, serif;
+            bottom: 0vmin;
+            font-weight: 500;
+            font-size: 1.35vmin;
+            color: #fffD;
+            border-radius: 1px;
+            padding: 20vmin 2vmin 3vmin;
+            letter-spacing: 0.5px;
+            word-spacing: 3px;
+            background: linear-gradient(0deg, black, transparent);
+            width: 100%;
+            text-align: center;
+    }
+
+    .content:after {
+            content: "";
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 0 20vmin 0vmin var(--black) inset, 0 0 3vmin 0.5vmin var(--black) inset, 0 0 1vmin 1vmin var(--black);
+    }
+
+    .film, .effect {
+            width: 100%;
+            height: 100%;
+            filter: blur(0.45px) drop-shadow(0px 0px 0px #fff1);
+    }
+
+    .film:after, .effect:after {
+            content: '';
+            width: 120%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            padding-left: 100px;
+            opacity: 0.5;
+            animation: film-scratch 0.45s steps(1) infinite;
+            background: repeating-linear-gradient(90deg, #0002 0 2px, transparent 4px 37vmin);
+    }
+
+    .effect:after {
+            left: 30%;
+            animation: effect-scratch 2s infinite;
+    }
+
+    .grain {
+            width: 100%;
+            height: 100%;
+    }
+
+    .grain:after {
+            content: '';
+            width: 110%;
+            height: 110%;
+            top: -5%;
+            left: -5%;
+            opacity: .25;
+            background-image:
+                    repeating-conic-gradient(var(--black) 0%, transparent .00003%, transparent .0005%, transparent .00095%),                repeating-conic-gradient(var(--black) 0%, transparent .00005%, transparent 0.00015%, transparent 0.0009%);
+            animation: grain 0.5s steps(1) infinite;
+            filter: drop-shadow(0px 0px 1px black);
+    }
+
+    @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-1%, -1%); }
+            20% { transform: translate(1%, 1%); }
+            30% { transform: translate(-2%, -2%); }
+            40% { transform: translate(3%, 3%); }
+            50% { transform: translate(-3%, -3%); }
+            60% { transform: translate(4%, 4%); }
+            70% { transform: translate(-4%, -4%); }
+            80% { transform: translate(2%, 2%); }
+            90% { transform: translate(-3%, -3%); }
+    }
+
+    @keyframes film-scratch {
+            0%, 100% { transform: translateX(0); opacity: 0.5; }
+            10% { transform: translateX(-1%); }
+            20% { transform: translateX(1%); }
+            30% { transform: translateX(-2%); opacity: 0.75; }
+            40% { transform: translateX(3%); }
+            50% { transform: translateX(-3%); opacity: 0.5; }
+            60% { transform: translateX(8%); }
+            70% { transform: translateX(-3%); }
+            80% { transform: translateX(10%); opacity: 0.25; }
+            90% { transform: translateX(-2%); }
+    }
+
+    @keyframes effect-scratch {
+            0% { transform: translateX(0); opacity: 0.75; }
+            10% { transform: translateX(-1%); }
+            20% { transform: translateX(1%); }
+            30% { transform: translateX(-2%); }
+            40% { transform: translateX(3%); }
+            50% { transform: translateX(-3%); opacity: 0.5; }
+            60% { transform: translateX(8%); }
+            70% { transform: translateX(-3%); }
+            80% { transform: translateX(10%); opacity: 0.25; }
+            90% { transform: translateX(20%); }
+            100% { transform: translateX(30%); }
+    }
+
+    /**** OLD FILM EFFECT END ****/
+
+
+
+
+
+
+    /*** OPTIONS ***/
+
+    @property --pos {
+            syntax: '<percentage>';
+            inherits: false;
+            initial-value: 20%;
+    }
+
+    input {
+            display: none;
+    }
+
+    label {
+            position: absolute;
+            background: #0008;
+            bottom: 7vmin;
+            z-index: 3;
+            width: 12vmin;
+            height: 5vmin;
+            margin-left: 15vmin;
+            border-radius: 5vmin;
+            cursor: pointer;
+            border-bottom: 1px solid #fff4;
+            border-top: 1px solid var(--black);
+    }
+
+    label[for=invert] {
+            margin-left: -15vmin;
+    }
+
+    label:before {
+            width: 4vmin;
+            height: 4vmin;
+            background: #485637;
+            content: "";
+            border-radius: 100%;
+            box-sizing: border-box;
+            top: 0.5vmin;
+            left: 0.75vmin;
+            box-shadow: 2px 0px 4px 0px #000c;
+    }
+
+    label:after {
+            font-family: Arial, Helvetica, serif;
+            font-weight: 500;
+            font-size: 1.25vmin;
+            border-radius: 1px;
+            content: "SEPIA FILTER";
+            color: #fffd;
+            bottom: 6.5vmin;
+            background: linear-gradient(180deg, black 3.35vmin, #fff0 3.35vmin), conic-gradient(from -45deg at var(--pos) 100%, var(--black) 0 25%, #fff0 0 100%);
+            padding: 1vmin 0.5vmin 2vmin;
+            text-shadow: none;
+            letter-spacing: 0.5px;
+            margin-left: 0;
+            opacity: 0.65;
+            transition: var(--trsn);
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+    }
+
+    label[for=invert]:after {
+            content: "INVERT GRAIN";
+    }
+
+
+    /*** checked ***/
+
+    input:checked + label:before {
+            left: 7.25vmin;
+            transition: var(--trsn);
+            background: #39b13e;
+    }
+
+    input#sepia:checked ~ .content {
+            filter: sepia(0.75);
+    }
+
+    input#invert:checked ~ .content .film {
+            filter: invert(1)
+    }
+
+    input:checked + label:after {
+            animation: arrow 0.5s ease 0s 1;
+            animation-fill-mode: forwards;
+            transition: var(--trsn);
+            filter: invert(1);
+    }
+
+    input:checked + label[for=sepia]:after {
+           filter: invert(0.75) sepia(1);
+    }
+
+    @keyframes arrow {
+            0% { --pos: 20%; }
+            100% { --pos: 80%; }
+    }
+binaryData:
+  notify.mp3: SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU2LjQwLjEwMQAAAAAAAAAAAAAA//sowAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAB7AABKQAAQFBgaHyAiJCgqLC4wNDY4Oj5AQUNHSUtNT1NVV1ldX2BiZmhqbG5ydHZ4fH6AgYWHiYuNkZOVl5udn6CkpqiqrLCytLa6vL7Aw8XHycvP0dPV2dvd3+Lk5ujq7vDy9Pj6/P4AAAAATGF2YzU2LjYwAAAAAAAAAAAAAAAAJAAAAAAAAAAASkC1jeiwAAAA//uoxAAAAdQBGjQAABOasqb/MYJBiD//8EHf/Ln/+Jz8PqDCLKLKMyqpoykakhaBRBKAEUljnIRz5eund8ugDhLsfO/FBKigisCdaxHda2Vkf1m8/F/WCYO+ssTqdzgkNXD+SNirRWWum6jQOyh9H4ciM0ylTbiIaQEDr1Zywd3YMd2HIu67v0sbl7+x6H5ZT22GSzrbSepK8XHgvKG5ZJJvOvPSuWRiV25M7fXbg93KS/KaXCTYbf/G1JJuzU+KUlizK/yt3opDDX4RA9d35ZORuAYpK6fK5W+/cvUGVqR7zxp8aepfw/mV6xSWP/4hG5VAkbo9Ub1w3TyHKn//ilajif0d38KbG9CVnYfHmne2nIpg2UZbKifYAUxWODgxYk4DjNvYgqaBlQkSYlOkgqaNNQMpAsBs8VgUMhIlaZ4KAhTNZCa5EMjoaDBxvHcG2rKU61MX8VsZi466zNXBUaJkNMjlaZrRaRQd/HcbSU3wzY0BEbwcSBly/laUTFJCIlVduL1pZLK9unoEuk6FA0AIcOmIhOGgMLMrnJqG7VWXS6xFJXL4vUvWMNFm0JKiJZgKiAphQMeVMkGCqsjldbKlxj26SVYdxysRSrI5frDC7fuqmL0IB0xS9aEgaGQGNbWFQ3fRp0ss0+Fi/yxHLdTDK9//TVMqG/25jevWrNy3/+rx+4zC3EjUCP/Mxp+Lkg7cMt5TPJAlkNcK4poT6NBYdLlPMytpaFZ8+NTJIvF43NTxYra5iiaokNBpgWhmkjdNTrRRRqSSS+iijSSd0lK1ompqiv6kkkkktTutFFu9xA590mSSSfRb6STupJLRRb6kjI2PCKCoKlQV//Kgq4soGnqVz7nO25lgWgDMFSSc4zqiRn6yrY6m14Efc0L3zFOtUXvWx0eUCwEmIUTF02ZJf2rSdSM+lSu6kqbIo3Se5lXoVKSZCkq7MgjmyKgy//toxOKAIOWZT/mckAHIo+v/nwAAULEC+fYxXZ66a0WqaUtla7f/9ROhDyspf8wr///84HRpuvu878y2CbAeooJKAGiqbIypjJLU2ft5Gi6meyRdvYLnP6kkRgpHwlJBYkbnFqS/opX1njynNjVnT0VsiyO3t3ZbNR6lGYhIREc8ngvEAQWKQLxIE46DpduZaGfUsrfb/sYwYOKVf6asZf//55wrucW6iurQ7stgoyN4JBA8niu41LsZD3/32mpqB0p29Y3jYtao+fvW8uNW7cKutOSU5Kf//sfwTajGimmppNaweOMqZT/pZVb1IjxAMsA2dDGIdOO4CaGqwWScMmSUgiz93dNdtvV/rQek6aN66rWuyWi1P//6lscc4aOPi8zADtxQHEOMAqFQJqMD4QQ6f/9YB4s1dqGoZ/FNUaj2VEmcWmTdZv/9T6nositFFG9aJgb2dCyNv/U5qOSeEJiJB1QCYUCL//tYxM8ADZGHVefQsenEsao8+gp0hNDy1W/9L/V/9L//////+pF2OkTy3cnMugC6MDyACARE50dZ1K+V9X/qX0EhPmIwOyZE0BRIgMOwxKzP/6TVJan1OtktbrRURKgismjh//9epZ4vEgAwURiGyTf////////////89cmGi7vLkKkwPOAmHQ6XEVWdnPqDhjl/ofdqtFAagc0nhcwBCXBFiBglsu2/oo1o1Pb+3W86NpIzKKJeJE43/39I6GpAcTk0yXf/////////Q///1LokRZV8vLy7yxAH4EYNh8bE005DKqQOOZWTCYEdvUv0G4MikVgEEUEVoIQ2Z////+tFTqFDijOsxQHWTpdb63U39ZgJeAMEi+h///////r///tIxOWADwGJTe0OFul2sKm8jUKF/6jv///e5J1dWFAAUIEgEQWA0TSjHP7v1fUNwoqKwWBClhGgfZ/////6YpplY+eIaml+dSTb+xkagoLCRf///////Wf//5t///1LMSYViQAAAAgABeAkCCZf//+XyYU0+pKwARAkksdn0Hb////9YvRsTY6ssEkj+y6O/Wo6EJAR8sLV3rS//////Wh//oGv///PTw7WsAAAAAAgReKDf0BnhJ2IeA41AFWUXAboJ/////5GjApVj4M///7EDAUFRXZ/rb/////+3//f///VubqAAAAACAAE4AAFb6voCvAsFyIiKgIg//soxO4ACmGHR+eKp6FVMOh8ys18QG1gqMwU0Fq/////oiospJx+Hk//+vqRSDFoBw0Iil/Pf/////1//9X///edMggC8AEAkn7oEWCgbJETyBCUAZOCo5BTUtX////6xdCiqWo4QMtPv//qOihAaAUwX+pv/////7//9v//9arEjZAAAAAIEATgAAK/pfYi4ODxBRIQTlwGRweKCLpktX////6xeF/UUCNRb/9/oEXAaGRX//soxOkAinWFReSKrOEWsKi8kFVUb+n//////f//v///2qN/gAAA+N19ET2CwiIKHogJogG4wSLKIqZIq/////WNwW9z0zJ0g///60g/oBwUKr/rP//////2//////7myuAAAB0AFwAAJ////n5BYWPAqMuCAXQcbBLJpabI/////5wYrnnOGBPu3/1/WOgLDTT+v//////b//////zwA4AD/r+sS8OOJ0ckAFGATH4jYqmz//sYxOuASQGHPeDyVCDqsKg80FR8P/////MxUrUigtf/6vsXgdH3d3//7///5eqgAAAAABAF9AIf+sbpFkSdAXCgLVck2f/////UP49P1N//+s4KaDYQxV+otN//+///+mAAACEH/rF6RQ6TgCQiCm+G+g7f////1C7NKszX///lALqUOpv//11MQU1FMy45//sYxOeCCIGFOeaCoeD6sKccoFR8OS41VVVVVVVVVVWAAAAAABBF6AAf+sXonxNABJTAYxw20E0H/////UNUWxkNF///8pBvb/zh///9ABACeAAf//+bdUmL9QL2J5oA49Imh/////mIQlSEyP///rUH8CMOq/Mhbt//+QVMQU1FMy45OS41VVVVVVVVVVVV//sYxOOBSBGFOeECoeDzsKb0EFR8VVVVVVVVVVVVVVUAAAAACDAF4AA8/QyGhcQ+OoCq1AzWAiBmC1f////zMdAgVF7nDD///YaLf5///9IBACeAAfc1C8isPwNGCBgcCFk4tX////9QuFE2TrSU3//6xqA8zZ/zpsd//+lMQU1FMy45OS41VVVVVVVVVVVV//sYxOICR7WFOaDyFCC6mqd0CsIUVVVVVVVVVVVVVVVVVVVVVVVVVQAACBE8AA///+ygoBZc3Ig2zSgZxaxqf////1BEFOjUZTf//2GYAY/+VJP//16AAAAAA4o4wYA/9IwJFIyBopBRoi6KX////+Uht////8bLuj//9CpMQU1FMy45OS41qqqqqqqqqqqq//sYxOkBhkjpQ+CCo+Cdmqf4EFR8qqqqqqqqqqqqqqqqqqqqqqqqqqqqoAAAAAxAhhwgB/dH6iMGikTQIIYF4BqbI/////8zFX////lITv/qN///1AEAIOAAK/1DUGRSJoBBHAtZCWKzP/////kePX///+UxBb/TG///+mpMQU1FMy45OS41qqqqqqqqqqqq//sYxPCCBcznP+CCo+C4nOdoDbZMqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqoAIAvoAH1DcIqZF4BALBFdR2H2f/////B8iXPb///sEP9CpMCMOAB9QviDqNgFg0BbQjQPs/////63FNFEQ////QXANj9fZBJFg///9FVMQU1FMy45OS41VVVVVVVVVVVV//sYxPCCBfznPeAGsGC0nOeoCrZMVVVVVVVVVVVVVVVVVVVVVVVVoAAAAAAghdwAAP+oawt7F8CBGAtQRsJoJt////+xiKrq///5wzFxGL+6JdGyarAAgYvwICf9AjhR2OglYAVok4mgm3////8wGDXX///6yE/zha///SpMQU1FMy45OS41qqqqqqqqqqqq//sYxOyABbTpO0BtUmCaGmm8EFB8qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrAAAAAAUQccAAE/ugZCponQaWgGNJxalq/////i8Gir///+on3/lioACBDAVv7sbB5zUshFDAMCEyWpf////+Lo3V////WRb/Mh7P///RVMQU1FMy45OS41VVVVVVVVVVVV//sYxOuCBVzpReECgeCdnOfoIFR8VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWwAAAAAECHHBABH/ZMTI1JkIeACicmlpL/////rGeFH////0SQb/Jd///0QAAABChf6JTFGNSZBDgAZFmyKSP////+kN9////1qL/+dUpMQU1FMy45OS41qqqqqqqqqqqq//sYxOkDBGznPuBVUmCnHOeMCqpkqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqgAADCFHAA+sjxbkS6BGsBfWTSKTf////5ZG0r///+UCf9yiDv//0yAAAAAAQI9H/rH2O5EugPGAFomW0Xb////+sXZBk2///+tE8nKgiHZMQU1FMy45OS41qqqqqqqqqqqq//sYxO0CBdDpP+CCo+CbnOg0EFB8qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqoAAAgRxgAPmSpkiXQv8FexLs7f////41R4d/+X9Lv//ooAAAAAAwhxwABf+slScWaAhEgjhFtn/////5RGJ//Jv5NMQU1FMy45OS41qqqqqqqqqqqq//sYxOmCRQDlQ+KCg+iZnOf00FR8qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrQAAAAAGFHGDABP/TMSpUCZcFNxuyaD/////zAhP/6Pb//+mgAAAAAEDHHAABL/TKIwHOAnVAbPHUE1L/////jUGj////oJ/6yo1VMQU1FMy45OS41VVVVVVVVVVVV//sYxOkBRWTnQeOCg+CJHOg8EFB8VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVZAAAAAAUEcUAAU37JmImiRYBrzAUrJoL/////1C6L/////f/UahDjAAezsKo2KQQZQ9BFBU/////xGA+n///9f+UP///QpMQU1FMy45OS41qqqqqqqqqqqq//sYxOmARNznP0BQUyCfmmf8EFR8qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkAAAAABQx9wAC/0jAYKRNAlNAlALqkUv////7MMVNv///1P/pFZYAECHFAAP/SKAtpsTQIKoF2hOpIpf////1EqLcv/////6zapMQU1FMy45OS41qqqqqqqqqqqq//sYxOMABBCbQUAGkiCGE2h8IFB8qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqoAAAAAAIEcUAAH+ofA0UjYCBBAtDCdNkX/////uLsy//////Omj2AAAAAAeAABD/UShdSNgIBwfYKjs/////+P48I//////RLVMQU1FMy45OS41VVVVVVVVVVVV//sYxOeABGibR+UCg+CbnSf8cFB8VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWQAAAAACCHEAADP+olC+o+DdAH9SIOz/////5iMH//8QgGGOBv9RHDvYzAooAvVLSaDt/////MBs///kVMQU1FMy45OS41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9YQIC8oYBgAGDHHwVnP5VIIwdZsC3/8buMVMQU1FMy45OS41VVVVVVVVVVVV//sYxNIDggRPSeAGEig8iejMAMJEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUAAAAAAKHAAAA9qfrCMIjFQAAj6lusJ4J/hVVMQU1FMy45OS41VVVVVVVVVVVV//sYxNQAwtRPR+AGMiA0iek4EEB9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUAAAADi8AAAfDuRY1SGAevPBV/rHAHzWfw0YH94xVMQU1FMy45OS41VVVVVVVVVVVV//sYxNeCAwhRM6CCg+BLCei8AMpEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUAAAAAAJHAAAA+a3xqBFdIAAR819wZvWVMQU1FMy45OS41VVVVVVVVVVVV//sYxNWCQoRRQeCCQ+hKCiZ0AOpEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVAAAAAACRwAAAPIa2xIwfTx3xrPVBn4PzxypMQU1FMy45OS41qqqqqqqqqqqq//sYxM+CwghPReAGMiAoCeg4AMpEqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqoAAAAAAIHAAAA9DWWqgnMFnJ50gABXaHLVQRsZK9VMQU1FMy45OS41VVVVVVVVVVVV//sYxNEDQnhPOaAHMiAmCehMAMZFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUAAAAAAKHAAAA+56oJI7IsAAE/Eo9UEFDMOBlMQU1FMy45OS41VVVVVVVVVVVV//sYxM4CwfRRS+AFsiAfiej4AMJFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQAAAAAAkcAAAD5KbDCBU4gABXmSmxpAqMhMQU1FMy45OS41VVVVVVVVVVVV//sYxM8DwhxPQeAGUighCegAAMZFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQAAAAAAkcAAAD5K54GRyoAAR8lPi0BWuVVMQU1FMy45OS41VVVVVVVVVVVV//sYxNECwmRRO+AGcigrCef4AMpFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVwAAAAAIHAAAAX9aCj9YQED9cB7X+got1hKgWFWFRMQU1FMy45OS41qqqqqqqqqqqq//sYxM+CwfxPQ+AGEiArief4AMZFqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqhwAAAJ+sIhEap+sJwLHYrVMQU1FMy45OS41VVVVVVVVVVVV//sYxM6CwfRRReAFsigliij4ALZEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUAAAAAAIHHAAA5w7nuYksiK+RYN//qAA/zWbVhCAPd8lVMQU1FMy45OS41VVVVVVVVVVVV//sYxM6CweRPQ+AGMiglieg4AMZFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQAAAAAAgcAAAD5rfFDBV3rAABPzX0wGGlVMQU1FMy45OS41VVVVVVVVVVVV//sYxNEDwnhPO+CCQ+goiidAEEh9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUAAAAAAJHAAAA+a2xfhVPWAACPms9UGfg/PmpMQU1FMy45OS41qqqqqqqqqqqq//sYxMoDwSBRQGACBeAZieeAAEi9qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqhwAAAFnqgnIXc/ZQAAj45aqCNjiuSpMQU1FMy45OS41qqqqqqqqqqqq//sYxNKCwsBRN+AHEiArCidQAMpFqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqAAAAAACBwAAAPilqkEoiNEcaflib4ClFBrFMQU1FMy45OS41qqqqqqqqqqqq//sYxM6CwgxPPeAGUigfiih4ALZEqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqgAAAAAAkcAAADDko9UG5CobFYAAK+SmxpAtMipMQU1FMy45OS41qqqqqqqqqqqq//sYxM+CwgBPP+AGMigpiid4AMZFqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqgAAAAOOAAAB8lcuAyHK/JT4kAVVytVMQU1FMy45OS41VVVVVVVVVVVV//sYxM0CwWhROGACRegpCec4AMpFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVAAAAAACBwAAAPMCj9YQADxcB0gAf6UfrCWDQVKVMQU1FMy45OS41VVVVVVVVVVVV//sYxM8DwkhRN+AGcigfCieAAL5FVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVRwAAAJ+sIhOxWfrCcCx2KpMQU1FMy45OS41qqqqqqqqqqqq//sYxNACwkhRO+AGMigkCig4ALZEqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqhwAAAFn6wnBm3hIAAR8K3rDrBXfatVMQU1FMy45OS41VVVVVVVVVVVV//sYxM0DwcRPO6AGUigcCecAAMpFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQAAAAOOAAAB81vjPAzvW+a+bhVnraVMQU1FMy45OS41VVVVVVVVVVVV//sYxNCCwlxPN+AGUigmiibQAMZEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVRwAAAFtinhXPHDjBZ6oITB7OXBMg3/t8ipMQU1FMy45OS41qqqqqqqqqqqq//sYxMoDwShPOmACBeAZiebAAEi9qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqAA4AAWeqCaId///i1ljGsaOALYRJerpMQU1FMy45OS41qqqqqqqqqqqq//sYxM0CwVRPNmACBegqCic4AMJFqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqHAAAAnqgkjQi1sGEIShMQU1FMy45OS41qqqqqqqqqqqq//sYxM0DwdhPOaAGMigbCebAAMpFqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqocAAABTXDqhUNid0AAIHA3yU2NIDAyP//3N1VMQU1FMy45OS41VVVVVVVVVVVV//sYxM6DQTRPNmACJeg7CiZMAEi8VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUAAAADC8AAAeZKXlwKlc7w+SdCShwAp8aAZaFMQU1FMy45OS41VVVVVVVVVVVV//sYxM2DQgxPNmACBeAYiieMADS8VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVHAAAAU+DAAowTvgiCypMQU1FMy45OS41qqqqqqqqqqqq//sYxMkDwSxPNmACBeASiicAADS8qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr4IiW+CIb1MQU1FMy45OS41VVVVVVVVVVVV//sYxM+CQWhRNGACJeg9iic8ALZEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVRwAAAL4QQZ5aN8KwJpMQU1FMy45OS41qqqqqqqqqqqq//sYxM+DQoBPMaAGciAbCidMADS8qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrycEf1DtVMQU1FMy45OS41VVVVVVVVVVVV//sYxMkDwThPNGABpeAOiedAACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUcAAABbY1ggppZ7A/gKXP4DqVMQU1FMy45OS41VVVVVVVVVVVV//sYxMWDwGhPOgABRcANiedAACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUcAAAC2GkW3am2DJxMQU1FMy45OS41qqqqqqqqqqqq//sYxMiDwTBRNmABpeAMiedAACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqHAAAAtUDSMiJFWwZDSpMQU1FMy45OS41qqqqqqqqqqqq//sYxMUDwGBPNgABpcAIiefAACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqgAAAADgAAAL6mxCgyQ2pQ448mhqu//yVMQU1FMy45OS41VVVVVVVVVVVV//sYxMsDwSBPNmABpeAjCiYAADS9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQBwAAFcwAYG//2PebU+LAED//oZapVMQU1FMy45OS41VVVVVVVVVVVV//sYxMgDwSBRNmABpeALiedAACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVb4YBDfBEJpMQU1FMy45OS41qqqqqqqqqqqq//sYxMkDwTxPNGABpeANiebAACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr4qI3wRCfVMQU1FMy45OS41VVVVVVVVVVVV//sYxM4DQfRPMaCBpcAhCecMADS8VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVvhkG98WQQ6pMQU1FMy45OS41qqqqqqqqqqqq//sYxM0DwZBRMmABpeAjCeZAADS8qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrzIV/PBOpMQU1FMy45OS41qqqqqqqqqqqq//sYxMWDwGxPNAABRcAOCeaAACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqvH8UrYjxSpMQU1FMy45OS41qqqqqqqqqqqq//sYxMWDwFxPMgABpcAOCeaAACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrYqjcBwLVA0nPzGwqhMQU1FMy45OS41qqqqqqqqqqqq//sYxMYDwGxPNAABRcAPCeYAADS4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrYIxMtg6EFMQU1FMy45OS41VVVVVVVVVVVV//sYxMUDwFhPNAABpcAKCebAACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVfEkEhwB5iEa6ytMQU1FMy45OS41VVVVVVVVVVVV//sYxMWDwGBPMgABpcAOCeYAADS4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV8wFYD8KfFgDL/JIevvYPalZMQU1FMy45OS41qqqqqqqqqqqq//sYxMiDQGxPMAABpcAmieYMADS8qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr4YBRvioQZMQU1FMy45OS41qqqqqqqqqqqq//sYxMWDwHBPMgABRcANieYAACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqgBwAAL4qH//03wRCfVMQU1FMy45OS41VVVVVVVVVVVV//sYxMcDQGBPNAABRcAcCeYMADS4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVb4fgh/FwJpMQU1FMy45OS41qqqqqqqqqqqq//sYxMqDQFhPMgABpcA4iiYMADS8qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrzgT8jBOpMQU1FMy45OS41qqqqqqqqqqqq//sYxMWDwHBPLAABpcANCeXAADS4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrxHCIXcWwRht+4t/mUhtdMQU1FMy45OS41VVVVVVVVVVVV//sYxMiDwRxNNGABpeAOCeYAACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbYIxtbBGYpMQU1FMy45OS41qqqqqqqqqqqq//sYxMWDwHhPKgABpcALieZAACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrYfRaWwxCBMQU1FMy45OS41qqqqqqqqqqqq//sYxMUDwFBPMgABRcALCeZAACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqvH0VvRCM1VMQU1FMy45OS41VVVVVVVVVVVV//sYxMmDQGBPMAABRcAviiWMACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVfJgrXw8CFVMQU1FMy45OS41VVVVVVVVVVVV//sYxMWDwGxPLgABRcAMCeXAACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVb4Ig1vhEFFMQU1FMy45OS41VVVVVVVVVVVV//sYxMWDwHRPKgABpcANieWAACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVvgiJ74fhbupMQU1FMy45OS41qqqqqqqqqqqq//sYxMWDwGBPLAABpcAMiiVAADS4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqoDAAviyFd//4ow/p8nCvVMQU1FMy45OS41VVVVVVVVVVVV//sYxMWDwFxPLAABpcANieWAACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV+HfJ4pJMQU1FMy45OS41qqqqqqqqqqqq//sYxMWDwHBPKgABRcAOCeTAADS4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2LMUgKBbBGFr/pYpMQU1FMy45OS41qqqqqqqqqqqq//sYxMYDwGhPKgABRcAQiiTAADS4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrYIya2KpQpMQU1FMy45OS41qqqqqqqqqqqq//sYxMmDwXBPKEABpdALieVAADS4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtUH0RFsPQgpMQU1FMy45OS41qqqqqqqqqqqq//sYxMSDwDhPLgABRcALieUAADS4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrxiCXsCVVMQU1FMy45OS41VVVVVVVVVVVV//sYxMgDQHBPJgABpcAiCeTMACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVFAAAA8XAlcNbK3xCBlVMQU1FMy45OS41VVVVVVVVVVVV//sYxMWDwGhPKAABRcANCeSAADS4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVb1hoFrfBg1MQU1FMy45OS41VVVVVVVVVVVV//sYxMYDwIRPIgABpcANieTAACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVb4qFMmD/++DwRpMQU1FMy45OS41qqqqqqqqqqqq//sYxMUDwFxPKAABRcAJCeUAACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqAADAwAADEH/98ahTmtCTX//yIE5MQU1FMy45OS41qqqqqqqqqqqq//sYxMkDwTxPJmABRcAOieQAADS4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqgADwADHr//6gmRX//4vCKpMQU1FMy45OS41qqqqqqqqqqqq//sYxMWDwIRPIAABpcALieTAACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqgCAAEv/62xDilbBGFpMQU1FMy45OS41qqqqqqqqqqqq//sYxMcCwGhPIgABpcAZieQUAKnCqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqDAALVB/S/qaAIy2KpApMQU1FMy45OS41qqqqqqqqqqqq//sYxMwDwdBPISAFrgAVCeSAAKnAqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtg6EAWWxJBL/s1XtOE5MQU1FMy45OS41qqqqqqqqqqqq//sYxMoCwSxPJQAFTAAXieRUAKnCqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqEDzorf/97EegK1VMQU1FMy45OS41VVVVVVVVVVVV//sYxMiDwSxPHKAFrgAOiePAACi4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV8Rgh//fdliOFb///////////3L/f/QpMQU1FMy45OS41qqqqqqqqqqqq//sYxMkDwUhPHEABpcANCeOAADS4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqoIF/+98Pgtf///exOxX////7//tst1ovg8dyNn////////ZupMQU1FMy45OS41qqqqqqqqqqqq//sYxMkDQGxPHAABRcApiiPIACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr1BEN3///////9P9v6v///1fW+CIN//tr////v//5P9yfo+rVVMQU1FMy45OS41VVVVVVVVVVVV//sYxMeDwPRPHCABpdAKCeOAADS4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVfDwO////////R///+v3rv1Iok4I///b////7P/ZQ1ieqr///q/9ehVMQU1FMy45OS41VVVVVVVVVVVV//sYxM2DwGBPHAABRcBNiiLAEDWYVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX1BP/////q6yeK7///////9n//r3f3OxhMQU1FMy45OS41qqqqqqqqqqqq//sYxNQDQsRRFiCBrMA1iaNEACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrLl5/rbFmKX//9f2K//7af/bd9ntV/6oWwRht//////////9uj/opMQU1FMy45OS41qqqqqqqqqqqq//sYxNSDwiRPGAABRcBNCeLAACh4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkA3//8ubYLSg4J6f/////////r//+WAoCpMQU1FMy45OS41qqqqqqqqqqqq//sYxNYDwaBRGgABRcBpCeKAEDSwqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpMQU1FMy45OS41qqqqqqqqqqqq//sYxM4DwOBPGgABRcBDiiLAADS4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//sYxNWDQuBRFAAFrIA+CeMEACi4qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//sYxM6DwmhPFiAFawAVAGKAAAAAqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//sYxMIDwAAB/gAAACAAAD/AAAAEqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
